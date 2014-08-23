@@ -122,7 +122,17 @@
 - (void)_transitionFinishedCanceling {
     [_displayLink invalidate];
     
-    [_transitionContext containerView].layer.speed = 1;
+    CALayer *layer = [_transitionContext containerView].layer;
+    
+    // Removing all animations in layer and its sublayers so that
+    // their completion blocks have the finished param set to NO,
+    // in compliance with Apple documented semantics
+    [CATransaction begin];
+    [layer removeAllAnimations];
+    for (CALayer* sublayer in [layer sublayers]) {
+        [sublayer removeAllAnimations];
+    }
+    [CATransaction commit];
 }
 
 @end
